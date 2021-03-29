@@ -24,7 +24,8 @@ class _FeedScreenSetup extends State<FeedScreen> {
   
   late var credentials;
   late var spotify;
-  
+  bool loaded = false;
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +61,9 @@ class _FeedScreenSetup extends State<FeedScreen> {
     await session.configure(AudioSessionConfiguration.speech());
     try {
       await _player.setAudioSource(_playlist);
+      setState(() {
+        loaded = true;
+      });
     } catch (e) {
       // catch load errors: 404, invalid url ...
       print("An error occured $e");
@@ -104,7 +108,7 @@ class _FeedScreenSetup extends State<FeedScreen> {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: _player.processingState == ProcessingState.idle ? SafeArea(
+          child: loaded ? SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -133,7 +137,19 @@ class _FeedScreenSetup extends State<FeedScreen> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(50),
                                 child: Image.network(
-                                    metadata.artwork),
+                                    metadata.artwork,
+                                    frameBuilder: (BuildContext context, Widget child, int? frame,
+                                        bool wasSynchronouslyLoaded) {
+                                      if (wasSynchronouslyLoaded) {
+                                        return child;
+                                      }
+                                      return AnimatedOpacity(
+                                        child: child,
+                                        opacity: frame == null ? 0 : 1,
+                                        duration: const Duration(seconds: 1),
+                                        curve: Curves.easeOut,
+                                      );
+                                    },),
                               ),
                               width: 325,
                           ),
@@ -180,7 +196,7 @@ class _FeedScreenSetup extends State<FeedScreen> {
                 ),
                 ControlButtons(_player),
                 SizedBox(height: 8.0),
-                _player.hasNext == false ? Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Icon(
@@ -190,7 +206,7 @@ class _FeedScreenSetup extends State<FeedScreen> {
                     Text('Swipe Up',
                       style: Theme.of(context).textTheme.headline6,)
                   ],
-                ) : Container(),
+                ),
               ],
             ),
           ) : SpinKitWave(
