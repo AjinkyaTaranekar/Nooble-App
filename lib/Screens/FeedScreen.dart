@@ -39,7 +39,7 @@ class _FeedScreenSetup extends State<FeedScreen> {
     SpotifyApi api = new SpotifyApi();
     var _credentials = await spotify.getCredentials();
     
-    ArtistTopTracks _tracks = await api.getTopTracks('5lfGXaGmQck7m2077vsKpy', 'IN', _credentials.accessToken);
+    ArtistTopTracks _tracks = await api.getTopTracks('4YRxDV8wJFPHPTeXepOstw', 'IN', _credentials.accessToken);
     var tracks = _tracks.tracks;
     
     List<AudioSource> playlist = [];
