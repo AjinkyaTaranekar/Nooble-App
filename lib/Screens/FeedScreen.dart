@@ -78,6 +78,9 @@ class _FeedScreenSetup extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -96,7 +99,7 @@ class _FeedScreenSetup extends State<FeedScreen> {
           padding: EdgeInsets.only(
             left: 10,
             right: 10,
-            top: 40,
+            top: height*0.1,
           ),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -131,11 +134,11 @@ class _FeedScreenSetup extends State<FeedScreen> {
                               style: Theme.of(context).textTheme.headline6),
                           Text(metadata.album),
                           SizedBox(
-                            height: 50,
+                            height: height*0.05,
                           ),
                           Container(
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
+                                borderRadius: BorderRadius.circular(width*0.15),
                                 child: Image.network(
                                     metadata.artwork,
                                     frameBuilder: (BuildContext context, Widget child, int? frame,
@@ -151,10 +154,11 @@ class _FeedScreenSetup extends State<FeedScreen> {
                                       );
                                     },),
                               ),
-                              width: 325,
+                              width: width*0.8,
+                              height: height*0.35,
                           ),
                           SizedBox(
-                            height: 50,
+                            height: height*0.05,
                           ),          
                         ],
                       );
