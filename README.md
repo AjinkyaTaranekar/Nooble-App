@@ -1,16 +1,13 @@
 <p align="center"> <img width="300" height="250" src="https://github.com/AjinkyaTaranekar/Nooble-App/blob/main/assets/icon.png">  </p>
 
 # Nooble App
-
-
+It is a cross platform music player app using Spotify API, with Swipe Up Navigations, to listen to your favourite songs. 
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ## Architecture
-
-Nooble contains 2 parts:
 
 Name | Description | Language | Source code
 ----|------|----|----
@@ -26,12 +23,13 @@ Frontend | Mobile Application | Flutter | https://github.com/AjinkyaTaranekar/No
 ### Frontend
 
  - Install Flutter.
- - add Android Studio and setup android device or android emulator
+ - Add Android Studio and setup android device or android emulator
  - Now, run the ``` flutter doctor ```
  
 #### To start App
 
- - move to frontend folder
+ - ``` git clone https://github.com/AjinkyaTaranekar/Nooble-App.git ```
+ - ``` cd Nooble-App ```
  - ``` flutter pub get ```
  - ``` flutter run --no-sound-null-safety ```
 
