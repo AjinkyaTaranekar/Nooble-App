@@ -24,3 +24,5 @@ const black = Colors.black;
 const error = Colors.redAccent;
 const success = Colors.greenAccent;
 const darkGrey = Color(0xffE7EBED);
+final clientId = "30fe7084541f472580e6c4111cd618fb";
+final clientSecret = "f3de6ce8a82e4b13b0fedd49a0f6774a";
