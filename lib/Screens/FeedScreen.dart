@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +11,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:nooble/constants.dart';
 import 'package:spotify/spotify.dart' as Spotify;
 import 'package:swipedetector/swipedetector.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -100,12 +99,12 @@ class _FeedScreenSetup extends State<FeedScreen> {
               begin: Alignment.topCenter,
               colors: [
                 primaryColor,
-                black,
+                black
               ],
               end: Alignment.bottomCenter,
             ),
           ),
-          child: SafeArea(
+          child: _player.processingState == ProcessingState.idle ? SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -181,56 +180,22 @@ class _FeedScreenSetup extends State<FeedScreen> {
                 ),
                 ControlButtons(_player),
                 SizedBox(height: 8.0),
-                Row(
+                _player.hasNext == false ? Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    StreamBuilder<LoopMode>(
-                      stream: _player.loopModeStream,
-                      builder: (context, snapshot) {
-                        final loopMode = snapshot.data ?? LoopMode.off;
-                        const icons = [
-                          Icon(Icons.repeat, color: Colors.grey),
-                          Icon(Icons.repeat, color: Colors.orange),
-                          Icon(Icons.repeat_one, color: Colors.orange),
-                        ];
-                        const cycleModes = [
-                          LoopMode.off,
-                          LoopMode.all,
-                          LoopMode.one,
-                        ];
-                        final index = cycleModes.indexOf(loopMode);
-                        return IconButton(
-                          icon: icons[index],
-                          onPressed: () {
-                            _player.setLoopMode(cycleModes[
-                                (cycleModes.indexOf(loopMode) + 1) %
-                                    cycleModes.length]);
-                          },
-                        );
-                      },
+                    Icon(
+                      Icons.keyboard_arrow_up, 
+                      color: white
                     ),
-                    StreamBuilder<bool>(
-                      stream: _player.shuffleModeEnabledStream,
-                      builder: (context, snapshot) {
-                        final shuffleModeEnabled = snapshot.data ?? false;
-                        return IconButton(
-                          icon: shuffleModeEnabled
-                              ? Icon(Icons.shuffle, color: Colors.orange)
-                              : Icon(Icons.shuffle, color: Colors.grey),
-                          onPressed: () async {
-                            final enable = !shuffleModeEnabled;
-                            if (enable) {
-                              await _player.shuffle();
-                            }
-                            await _player.setShuffleModeEnabled(enable);
-                          },
-                        );
-                      },
-                    ),
+                    Text('Swipe Up',
+                      style: Theme.of(context).textTheme.headline6,)
                   ],
-                ),
+                ) : Container(),
               ],
             ),
+          ) : SpinKitWave(
+            color: Colors.white,
+            size: 50.0,
           ),
         ),
       ),
