@@ -1,12 +1,17 @@
+import 'dart:convert';
+
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:nooble/Models/ArtistTopTracks.dart';
 import 'package:nooble/Models/Audio.dart';
+import 'package:nooble/Services/SpotifyAPI.dart';
 import 'package:nooble/Widgets/ControlButtons.dart';
 import 'package:nooble/Widgets/SeekBar.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:nooble/constants.dart';
+import 'package:spotify/spotify.dart' as Spotify;
 import 'package:swipedetector/swipedetector.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -16,52 +21,42 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenSetup extends State<FeedScreen> {
   late AudioPlayer _player;
-  final _playlist = ConcatenatingAudioSource(children: [
-    ClippingAudioSource(
-      start: Duration(seconds: 60),
-      end: Duration(seconds: 90),
-      child: AudioSource.uri(Uri.parse(
-          "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3")),
-      tag: AudioMetadata(
-        album: "Science Friday",
-        title: "A Salute To Head-Scratching Science (30 seconds)",
-        artwork:
-            "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-      ),
-    ),
-    AudioSource.uri(
-      Uri.parse(
-          "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3"),
-      tag: AudioMetadata(
-        album: "Science Friday",
-        title: "A Salute To Head-Scratching Science",
-        artwork:
-            "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-      ),
-    ),
-    AudioSource.uri(
-      Uri.parse("https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3"),
-      tag: AudioMetadata(
-        album: "Science Friday",
-        title: "From Cat Rheology To Operatic Incompetence",
-        artwork:
-            "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-      ),
-    ),
-  ]);
-  int _addedCount = 0;
-
+  late var _playlist;
+  
+  late var credentials;
+  late var spotify;
+  
   @override
   void initState() {
     super.initState();
+    credentials = Spotify.SpotifyApiCredentials(clientId, clientSecret);
+    spotify = Spotify.SpotifyApi(credentials);
     _player = AudioPlayer();
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.black,
-    ));
     _init();
   }
 
   Future<void> _init() async {
+    SpotifyApi api = new SpotifyApi();
+    var _credentials = await spotify.getCredentials();
+    
+    ArtistTopTracks _tracks = await api.getTopTracks('7qHsapL39aTQsPhixtzVvy', 'IN', _credentials.accessToken);
+    var tracks = _tracks.tracks;
+    
+    List<AudioSource> playlist = [];
+    tracks.forEach((track){
+      playlist.add(AudioSource.uri(
+        Uri.parse(
+            track.previewUrl),
+        tag: AudioMetadata(
+          album: track.album.name,
+          title: track.name,
+          artwork:
+              track.album.images[0].url,
+        ),
+      ));
+    });
+    //playlist = playlist.reversed.toList();
+    _playlist = ConcatenatingAudioSource(children: playlist);
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.speech());
     try {
@@ -86,11 +81,11 @@ class _FeedScreenSetup extends State<FeedScreen> {
     ));
     return Scaffold(
       body: SwipeDetector(
-        onSwipeUp: () {
+        onSwipeDown: () {
           if (_player.hasPrevious)
             _player.seekToPrevious();
         },
-        onSwipeDown: () {
+        onSwipeUp: () {
           if (_player.hasNext)
             _player.seekToNext();
         },
@@ -129,10 +124,9 @@ class _FeedScreenSetup extends State<FeedScreen> {
                             "NOW PLAYING",
                             style: Theme.of(context).textTheme.headline6
                           ),
-                          Text(metadata.album,
-                              style: Theme.of(context).textTheme.headline6
-                          ),
-                          Text(metadata.title),
+                          Text(metadata.title,
+                              style: Theme.of(context).textTheme.headline6),
+                          Text(metadata.album),
                           SizedBox(
                             height: 50,
                           ),

@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'dart:core';
+
+import 'package:nooble/Models/ArtistTopTracks.dart';
 
 class SpotifyApi {
   String searchEndpoint = "https://api.spotify.com/v1/search?";
@@ -51,9 +55,13 @@ class SpotifyApi {
   }
 
   // Get a list of top tracks from an artist's id.
-  Future<Response> getTopTracks(String artistId, String country) async {
+  Future<ArtistTopTracks> getTopTracks(String artistId, String country, String token) async {
+    headers["Authorization"] = "Bearer $token";
     String query =
         "https://api.spotify.com/v1/artists/$artistId/top-tracks?country=$country";
-      return await get(Uri.parse(query), headers: headers);
+    Response res = await get(Uri.parse(query), headers: headers);
+    //print(res.body);
+    ArtistTopTracks body = ArtistTopTracks.fromJson(jsonDecode(res.body));
+    return body;
   }
 }
