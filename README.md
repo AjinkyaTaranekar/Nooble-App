@@ -7,6 +7,8 @@ It is a cross platform music player app using Spotify API, with Swipe Up Navigat
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
+## Install APK [here](https://github.com/AjinkyaTaranekar/Nooble-App/blob/main/Nooble-App.apk?raw=true) 
+
 ## Architecture
 
 Name | Description | Language | Source code
